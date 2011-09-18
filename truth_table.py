@@ -20,6 +20,10 @@ class Assignment:
     return self.args[index]
 
 def convert_to_rpn(expr, variables):
+  """Dijkstra's shunting-yard algorithm
+
+  http://en.wikipedia.org/wiki/Shunting-yard_algorithm
+  """
   global OP_PRIS
   output = []
   op_stack = []
