@@ -36,10 +36,11 @@ def convert_to_rpn(expr, variables):
         output.append(op_stack.pop(0))
       op_stack.remove(0)
     else:
-      variables[token] = len(variables)
+      variables.append(token)
       output.append(token)
   while op_stack:
     output.append(op_stack.pop(0))
+  variables.sort()
   return output
 
 def evaluate_rpn(expr):
@@ -65,13 +66,19 @@ def evaluate_possibilities(expr, variables):
     new_expr = []
     for token in expr:
       if token not in OP_PRIS.keys():
-        new_expr.append(p[variables[token]])
+        new_expr.append(p[variables.index(token)])
       else:
         new_expr.append(token)
-    print evaluate_rpn(new_expr)
+    row = str(p) + (evaluate_rpn(new_expr) and 'T' or 'F')
+    print row + '\\\\'
 
 if __name__ == '__main__':
-  variables = {}
-  expr = 'p \\rightarrow q \land \lnot r'.split()
-  rpn_expr = convert_to_rpn(expr, variables)
+  variables = []
+  expr = 'p \\rightarrow q \land \lnot r'
+  expr_tokens = expr.split()
+  rpn_expr = convert_to_rpn(expr_tokens, variables)
+  print '\\begin{tabular}{' + 'c'.join(('|' for i in range(len(variables) + 2))) + '}'
+  print ' & '.join(variables) + ' & ' + expr + '\\\\\hline'
   evaluate_possibilities(rpn_expr, variables)
+  print '\hline'
+  print '\end{tabular}'
