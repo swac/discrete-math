@@ -1,12 +1,6 @@
 #!/usr/bin/python
 
-OP_PRIS = {
-  '\lnot'            : 5,
-  '\land'            : 4,
-  '\lor'             : 3,
-  '\\rightarrow'      : 2,
-  '\leftrightarrow'  : 1
-}
+from operations import *
 
 def convert_to_rpn(expr):
   global OP_PRIS
@@ -30,5 +24,21 @@ def convert_to_rpn(expr):
     output.append(op_stack.pop(0))
   return output
 
+def evaluate_rpn(expr):
+  global OP_MAPS
+
+  stack = []
+  for token in expr:
+    print stack
+    if token not in OP_PRIS.keys():
+      stack.insert(0, token)
+    else:
+      args = []
+      for i in range(OP_ARG_COUNT[token]):
+        args.insert(0, stack.pop(0))
+      stack.insert(0, OP_MAPS[token](args))
+  print stack
+  return stack[0]
+
 if __name__ == '__main__':
-  print convert_to_rpn('p \\rightarrow q \land \lnot r'.split())
+  evaluate_rpn([False, False, False, '\lnot', '\land', '\\rightarrow'])
