@@ -4,11 +4,23 @@ from itertools import product
 
 from operations import *
 
-VARS = set()
+class Assignment:
+  """Assignment of n boolean variables"""
+  def __init__(self, args):
+    self.args = tuple(args)
 
-def convert_to_rpn(expr):
+  def __str__(self):
+    string = ''
+    for i in self.args:
+      string += i and 'T' or 'F'
+      string += ' & '
+    return string
+
+  def __getitem__(self, index):
+    return self.args[index]
+
+def convert_to_rpn(expr, variables):
   global OP_PRIS
-  global VARS
   output = []
   op_stack = []
 
@@ -24,7 +36,7 @@ def convert_to_rpn(expr):
         output.append(op_stack.pop(0))
       op_stack.remove(0)
     else:
-      VARS.add(token)
+      variables[token] = len(variables)
       output.append(token)
   while op_stack:
     output.append(op_stack.pop(0))
@@ -42,24 +54,24 @@ def evaluate_rpn(expr):
       for i in range(OP_ARG_COUNT[token]):
         args.insert(0, stack.pop(0))
       stack.insert(0, OP_MAPS[token](args))
-  print stack
   return stack[0]
 
-def evaluate_possibilities(expr):
-  global VARS
-  possibilities = product([True, False], repeat=len(VARS))
+def evaluate_possibilities(expr, variables):
+  possibilities = (Assignment(i) for i in product([True, False], repeat=len(variables)))
   indices = {}
-  for i,j in enumerate(VARS):
+  for i,j in enumerate(variables):
     indices[j] = i
-  print indices
   for p in possibilities:
     new_expr = []
     for token in expr:
       if token not in OP_PRIS.keys():
-        new_expr.append(p[indices[token]])
+        new_expr.append(p[variables[token]])
       else:
         new_expr.append(token)
-    evaluate_rpn(new_expr)
+    print evaluate_rpn(new_expr)
 
 if __name__ == '__main__':
-  evaluate_possibilities(['p', 'q', 'r', '\lnot', '\land', '\\rightarrow'])
+  variables = {}
+  expr = 'p \\rightarrow q \land \lnot r'.split()
+  rpn_expr = convert_to_rpn(expr, variables)
+  evaluate_possibilities(rpn_expr, variables)
