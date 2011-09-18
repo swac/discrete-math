@@ -24,13 +24,12 @@ def convert_to_rpn(expr, variables):
 
   http://en.wikipedia.org/wiki/Shunting-yard_algorithm
   """
-  global OP_PRIS
   output = []
   op_stack = []
 
   for token in expr:
-    if token in OP_PRIS.keys():
-      while op_stack and OP_PRIS[op_stack[0]] >= OP_PRIS[token]:
+    if token in OPS:
+      while op_stack and OPS[op_stack[0]]['pri'] >= OPS[token]['pri']:
         output.append(op_stack.pop(0))
       op_stack.insert(0, token)
     elif token == '(':
@@ -48,17 +47,15 @@ def convert_to_rpn(expr, variables):
   return output
 
 def evaluate_rpn(expr):
-  global OP_MAPS
-
   stack = []
   for token in expr:
-    if token not in OP_PRIS.keys():
+    if token not in OPS:
       stack.insert(0, token)
     else:
       args = []
-      for i in range(OP_ARG_COUNT[token]):
+      for i in range(OPS[token]['argc']):
         args.insert(0, stack.pop(0))
-      stack.insert(0, OP_MAPS[token](args))
+      stack.insert(0, OPS[token]['func'](args))
   return stack[0]
 
 def evaluate_possibilities(expr, variables):
@@ -69,7 +66,7 @@ def evaluate_possibilities(expr, variables):
   for p in possibilities:
     new_expr = []
     for token in expr:
-      if token not in OP_PRIS.keys():
+      if token not in OPS:
         new_expr.append(p[variables.index(token)])
       else:
         new_expr.append(token)
