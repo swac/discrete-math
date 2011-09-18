@@ -1,0 +1,23 @@
+Right now there's just a truth table generator.
+
+Here's an example use case:
+
+pollos:scripts ashwin$ ./truth_table.py
+Enter expression with each token separated by a space: p \rightarrow q \land \lnot r
+
+And then you get this output:
+
+\begin{tabular}{|c|c|c|c|}
+p & q & r & p \rightarrow q \land \lnot r\\\hline
+T & T & T & F\\
+T & T & F & T\\
+T & F & T & F\\
+T & F & F & F\\
+F & T & T & T\\
+F & T & F & T\\
+F & F & T & T\\
+F & F & F & T\\
+\hline
+\end{tabular}
+
+How great is that?
