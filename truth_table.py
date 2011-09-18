@@ -73,8 +73,8 @@ def evaluate_possibilities(expr, variables):
     print row + '\\\\'
 
 if __name__ == '__main__':
+  expr = raw_input('Enter expression with each token separated by a space: ')
   variables = []
-  expr = 'p \\rightarrow q \land \lnot r'
   expr_tokens = expr.split()
   rpn_expr = convert_to_rpn(expr_tokens, variables)
   print '\\begin{tabular}{' + 'c'.join(('|' for i in range(len(variables) + 2))) + '}'
