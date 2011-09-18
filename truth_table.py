@@ -1,9 +1,14 @@
 #!/usr/bin/python
 
+from itertools import product
+
 from operations import *
+
+VARS = set()
 
 def convert_to_rpn(expr):
   global OP_PRIS
+  global VARS
   output = []
   op_stack = []
 
@@ -19,6 +24,7 @@ def convert_to_rpn(expr):
         output.append(op_stack.pop(0))
       op_stack.remove(0)
     else:
+      VARS.add(token)
       output.append(token)
   while op_stack:
     output.append(op_stack.pop(0))
@@ -29,7 +35,6 @@ def evaluate_rpn(expr):
 
   stack = []
   for token in expr:
-    print stack
     if token not in OP_PRIS.keys():
       stack.insert(0, token)
     else:
@@ -40,5 +45,21 @@ def evaluate_rpn(expr):
   print stack
   return stack[0]
 
+def evaluate_possibilities(expr):
+  global VARS
+  possibilities = product([True, False], repeat=len(VARS))
+  indices = {}
+  for i,j in enumerate(VARS):
+    indices[j] = i
+  print indices
+  for p in possibilities:
+    new_expr = []
+    for token in expr:
+      if token not in OP_PRIS.keys():
+        new_expr.append(p[indices[token]])
+      else:
+        new_expr.append(token)
+    evaluate_rpn(new_expr)
+
 if __name__ == '__main__':
-  evaluate_rpn([False, False, False, '\lnot', '\land', '\\rightarrow'])
+  evaluate_possibilities(['p', 'q', 'r', '\lnot', '\land', '\\rightarrow'])
